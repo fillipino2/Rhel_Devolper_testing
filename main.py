@@ -19,6 +19,6 @@ with open("result.csv", "w", newline="") as file:
     for name, func in check_functions:
         try:
             result = func()
-            writer.writerow([name, "Pass", if result else "Fail"])
+            writer.writerow([name, "Pass" if result else "Fail"])
         except Exception as e:
             writer.writerow ([name, f"Error: {str(e)}"])
