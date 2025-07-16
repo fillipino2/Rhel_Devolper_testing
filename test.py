@@ -1,20 +1,15 @@
 import subprocess
 import re
 
-def check_signed_packages_dnf():
+def check_selinux_enabled():
     try:
-        with open("/etc/dnf/dnf.conf", "r") as dnf:
-            for line in dnf:
-                line = line.strip()
-                if line.startswith("localpkgcheck_gpg"):
-                    key_value = [s.strip() for s in line.split("=", 1)]
-                    if len(key_value) == 2 and key_value[1].lower() == "true":
-                        return ("Pass", "'localpkgcheck_gpg=true' is set correctly")
-                    else:
-                        return ("Fail", f"Found 'localpkgcheck_gpg={key_value[1]}', expected 'true'")
-        # If the loop finishes and no match was found
-        return ("Fail", "'localpkgcheck_gpg=true' is missing from /etc/dnf/dnf.conf")
-
-    except Exception as e:
-        return ("Error", str(e))
-
+        result = subprocess.run(["sestatus"], capture_output=True,text=True )
+        output = result.stdout.lower()
+        for line in output.splitlines():
+            if line.startswith("SELinux status:"):
+                status = line.split(":", 1)[1].strip()
+                if status == "enabled":
+                    return "Pass"
+                else:
+                    return "Fail"
+        return " Fail"
