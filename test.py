@@ -10,7 +10,7 @@ def check_auto_login_with_gui():
     try:
 
         with open("/etc/gdm/custom.conf", "r") as auto:
-            if 
+            
             for line in auto:
                 line = line.strip().lower()
                 if line.startswith("automaticloginenable"):
