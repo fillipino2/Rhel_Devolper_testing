@@ -2,23 +2,17 @@ import subprocess
 import re
 import os
 
-def check_auto_login_with_gui():
-    path = "/etc/gdm/custom.conf"
-    if not os.path.exists(path):
-        return ("N/A", "custom.conf is not present; GUI is most likely not in use, Ask stakeholder to confirm")
-    
+def check_bios_UEFI():
     try:
-
-        with open("/etc/gdm/custom.conf", "r") as auto:
-            
-            for line in auto:
-                line = line.strip().lower()
-                if line.startswith("automaticloginenable"):
-                    if "#" in line or ";" in line:
-                        continue
-                    value = line.split("=", 1)[1].strip()
-                    return "Pass" if value == "false" else "fail"
-        return "Fail"
+        firmware = subprocess.run("test -d /sys/firmware/efi && echo UEFI || echo BIOS", shell=True, capture_output=True, text=True)
+        if firmware.stdout.strip().lower() == "uefi":
+            result = subprocess.run("grep -iw grub2_password /boot/efi/EFI/redhat/user.cfg", shell=True, capture_output=True, text=True)
+            output = result.stdout.strip().lower()
+            if output.startswith("grub2_password=grub.pbkdf2.sha512"):
+                return "Pass"
+            else:
+                return "Fail"
+        return "Only Applicable to UEFI systems"
     except Exception as e:
         return f"Error: {e}"
 
