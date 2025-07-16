@@ -2,9 +2,10 @@
 import csv
 import checklist1
 import inspect
+import test
 
 check_functions = [
-    (name, obj) for name, obj in inspect.getmembers(checklist1)
+    (name, obj) for name, obj in inspect.getmembers(test)
     if inspect.isfunction(obj) and name.startswith("check_")
     
 ]
