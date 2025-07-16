@@ -12,7 +12,7 @@ def check_bios_UEFI():
                 return ("Pass", f"grub2_password is secure: {output}")
             else:
                 return ("Fail", f"grub2_password is unsecure: {output}")
-        return ("N/A" "Only Applicable to UEFI systems")
+        return ("N/A", "Only Applicable to UEFI systems")
     except Exception as e:
         return f"Error: {e}"
 
