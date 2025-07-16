@@ -1,16 +1,15 @@
 import subprocess
 import re
 
-def check_blank_password():
-    empty_user = []
-    with open("/etc/shadow", "r") as empty:
-        for line in empty:
-            fields = line.strip().split(":")
-            if len(fields) > 1 and fields[1] == "":
-                empty_user.append(fields[0])
-    if empty_user:
-        return ",".join(empty_user)
-    else:
-        return ("Pass", "No empty passwords for users")
+def check_crypto_policies():
+    try:
+        result = subprocess.run("update-crypto-policies --show", shell=True, capture_output=True, text=True)
+        output = result.stdout.lower().strip()
+        if output == "future":
+            return "Pass"
+        else:
+            return "Fail"
+    except Exception as e:
+        return f"Error: {e}"
 
-print(check_blank_password())
+print(check_crypto_policies())
