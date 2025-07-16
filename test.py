@@ -1,19 +1,16 @@
 import subprocess
 import re
 
-def check_selinux_target_policy():
-    try:
-        command = subprocess.run(["sestatus"], capture_output=True,text=True)
-        output = command.stdout.lower()
-        for line in output.splitlines():
-            if line.startswith("loaded policy name:"):
-                status = line.split(":", 1)[1].strip()
-                if status == "targeted":
-                    return ("Pass", "SELinux is enforcing targeted policies")
-                else:
-                    return ("Fail", f"SELinux is {status}")
-        return ("Fail", "SELinux loaded policy name was not found")
-    except Exception as e:
-        return ("Error", str(e))
+def check_blank_password():
+    empty_user = []
+    with open("/etc/shadow", "r") as empty:
+        for line in empty:
+            fields = line.strip().split(":")
+            if len(fields) > 1 and fields[1] == "":
+                empty_user.append(fields[0])
+    if empty_user:
+        return ",".join(empty_user)
+    else:
+        return ("No empty passwords for users")
 
-print(check_selinux_target_policy())
+print(check_blank_password())
