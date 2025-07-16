@@ -2,15 +2,23 @@ import subprocess
 import re
 import os
 
-def check_rsh_server_package():
-        try:
-            command = subprocess.run("yum list installed  rsh-server",shell=True,capture_output=True,text=True)
-        
-            if command.returncode == 0:
-                return ("Fail", f"rsh-server has been installed and needs to be removed: {command.stdout}")
-            else:
-                return ("Pass", "rsh-server is not installed")
-        except Exception as e:
-            return f"Error {e}"
+def check_permitemptypassword_sshd():
+    try:
+        with open("/etc/ssh/sshd_config", "r") as permitpasswd:
+            for line in permitpasswd:
+                line = line.strip()
 
-print(check_rsh_server_package())
+                if not line or line.startswith("#"):
+                    continue
+                
+                if line.lower().startswith("permitemptypassword"):
+                    parts = line.split()
+                    if len(parts) >= 2 and parts[1].lower() == "no":
+                        return ("PermitEmptyPasswords", "pass", "set to no")
+                    else:
+                        return ("PermitEmptyPasswords", "Fail", f"{parts[1] if len(parts) > 1 else 'missing'}")
+        return (" PermitEmptyPasswords", "Pass", "Directive not found")
+    except Exception as e:
+        return ("PermitEmptyPasswords", "error", str(e))
+
+print(check_permitemptypassword_sshd())
