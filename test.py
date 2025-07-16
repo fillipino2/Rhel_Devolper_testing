@@ -1,9 +1,16 @@
 import subprocess
 import re
+import os
 
 def check_auto_login_with_gui():
+    path = "/etc/gdm/custom.conf"
+    if not os.path.exists(path):
+        return ("N/A", "custom.conf is not present; GUI is most likely not in use, Ask stakeholder to confirm")
+    
     try:
+
         with open("/etc/gdm/custom.conf", "r") as auto:
+            if 
             for line in auto:
                 line = line.strip().lower()
                 if line.startswith("automaticloginenable"):
