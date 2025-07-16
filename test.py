@@ -13,3 +13,5 @@ def check_selinux_enabled():
                 else:
                     return "Fail"
         return "Fail"
+    except Exception as e:
+        return f"Error: {e}"
