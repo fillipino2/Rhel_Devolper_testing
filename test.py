@@ -57,5 +57,5 @@ def check_icmp_redirect():
         return ("Pass", "ICMP redirect is disabled both live and in config")
 
     except Exception as e:
-
+        return f"Error {e}"
 print(check_icmp_redirect())
