@@ -9,9 +9,9 @@ def check_audit_services():
         for line in output.splitlines():
             if line.lstrip().startswith("Active:"):
                     if "active (running)" in line.lower():
-                        return "Pass"
+                        return ("Pass", "Audit service is currently running")
                     else:
-                        return "Fail"
+                        return ("Fail", "Audit service is not currently running")
     except Exception as e:
         return f"Error: {e}"
 
