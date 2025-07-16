@@ -14,6 +14,6 @@ def check_selinux_target_policy():
                     return ("Fail", f"SELinux is {status}")
         return ("Fail", "SELinux loaded policy name was not found")
     except Exception as e:
-        return ("Error", str{e})
+        return ("Error", str(e))
 
 print(check_selinux_target_policy())
