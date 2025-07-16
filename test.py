@@ -11,9 +11,9 @@ def check_gui():
                                  capture_output=True,
                                  text=True)
         if command.returncode == 0:
-            return "Fail, Unless approved previously"
+            return ("Fail", f"Gui has been installed {command.stdout} ")
         else:
-            return "Pass"
+            return ("Pass", f"No GUI has been installed {command.stdout}")
     except Exception as e:
         return f"Error: {e}"
 print(check_gui())
