@@ -17,4 +17,4 @@ def check_selinux_enabled():
 
     except Exception as e:
         return ("Error", str(e))
-print(check_selinus_enabled())
+print(check_selinux_enabled())
