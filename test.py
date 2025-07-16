@@ -16,4 +16,4 @@ def check_bios_UEFI():
     except Exception as e:
         return f"Error: {e}"
 
-print(check_auto_login_with_gui())
+print(check_bios_UEFI())
