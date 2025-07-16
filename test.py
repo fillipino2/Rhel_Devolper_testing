@@ -20,7 +20,7 @@ def check_pki_status():
                 else:
                     return ("Fail", f"Im not sure what to write: {output}")
         else:
-            return "Fail"
+            return ("Fail", f"but why {output}")
     except Exception as e:
         return f"Error: {e}"
 print(check_pki_status())
