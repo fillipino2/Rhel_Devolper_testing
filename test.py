@@ -12,4 +12,4 @@ def check_selinux_enabled():
                     return "Pass"
                 else:
                     return "Fail"
-        return " Fail"
+        return "Fail"
