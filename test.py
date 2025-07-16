@@ -14,7 +14,7 @@ def check_icmp_redirect():
             "/etc/sysctl.d/*.conf"
         ]
 
-        # Check live value
+        # 1. Check live value
         command = subprocess.run(
             "sysctl net.ipv4.conf.all.accept_redirects",
             shell=True,
@@ -23,10 +23,11 @@ def check_icmp_redirect():
         )
         output = command.stdout.strip()
 
-        if output != "net.ipv4.conf.all.accept_redirects = 0":
-            return ("Fail", "Live setting is not 0: " + output)
+        live_pass = output == "net.ipv4.conf.all.accept_redirects = 0"
+        file_pass = True
+        fail_details = []
 
-        # Expand all file paths (resolve globs)
+        # 2. Expand and check config files
         files_to_check = []
         for path in file_list:
             if "*" in path:
@@ -34,7 +35,6 @@ def check_icmp_redirect():
             else:
                 files_to_check.append(path)
 
-        # Check each file
         for file_path in files_to_check:
             try:
                 with open(file_path, "r") as fp:
@@ -44,18 +44,23 @@ def check_icmp_redirect():
                             continue
                         if "net.ipv4.conf.all.accept_redirects" in line and "=" in line:
                             key, val = [x.strip() for x in line.split("=", 1)]
-
-                            # Sanitize val to remove inline comments, if any
                             val = val.split("#")[0].strip().lower()
-
                             if key == "net.ipv4.conf.all.accept_redirects" and val != "0":
-                                return ("Fail", f"{file_path}:{line_num} sets {key} = {val}")
-            except Exception as e:
-                # You could log this if needed
+                                file_pass = False
+                                fail_details.append(f"{file_path}:{line_num} sets {key} = {val}")
+            except Exception:
                 continue
 
-        return ("Pass", "ICMP redirect is disabled both live and in config")
+        # 3. Combine results
+        if not live_pass and not file_pass:
+            return ("Fail", f"Live setting wrong: {output}; File issues: {', '.join(fail_details)}")
+        elif not live_pass:
+            return ("Fail", f"Live setting wrong: {output}")
+        elif not file_pass:
+            return ("Fail", f"File issues: {', '.join(fail_details)}")
+        else:
+            return ("Pass", "ICMP redirect is disabled both live and in config")
 
     except Exception as e:
-        return f"Error {e}"
+        return ("Error", str(e))
 print(check_icmp_redirect())
