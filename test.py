@@ -12,9 +12,9 @@ def check_os_release(min_required_version="8.10"):
         current_version = float(match.group(1))
         required_version = float(min_required_version)
         if current_version >= required_version:
-            return "Pass"
+            return ("Pass", f"The version is the correct version: {current_version}")
         else:
-            return "Fail"
+            return ("Fail", f"The version does not meet the required version: {current_version}")
         
     except Exception as e:
         return f"Error: {e}"
