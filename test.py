@@ -26,7 +26,7 @@ def check_icmp_redirect():
         if output != "net.ipv4.conf.all.accept_redirects = 0":
             return ("Fail", "Live setting is not 0: " + output)
 
-        # Check persistent config files
+        # Expand all file paths (resolve globs)
         files_to_check = []
         for path in file_list:
             if "*" in path:
@@ -34,6 +34,7 @@ def check_icmp_redirect():
             else:
                 files_to_check.append(path)
 
+        # Check each file
         for file_path in files_to_check:
             try:
                 with open(file_path, "r") as fp:
@@ -43,14 +44,18 @@ def check_icmp_redirect():
                             continue
                         if "net.ipv4.conf.all.accept_redirects" in line and "=" in line:
                             key, val = [x.strip() for x in line.split("=", 1)]
+
+                            # Sanitize val to remove inline comments, if any
+                            val = val.split("#")[0].strip().lower()
+
                             if key == "net.ipv4.conf.all.accept_redirects" and val != "0":
                                 return ("Fail", f"{file_path}:{line_num} sets {key} = {val}")
             except Exception as e:
-                continue  # Ignore unreadable files for now
+                # You could log this if needed
+                continue
 
         return ("Pass", "ICMP redirect is disabled both live and in config")
 
     except Exception as e:
-        return ("Error", str(e))
 
 print(check_icmp_redirect())
