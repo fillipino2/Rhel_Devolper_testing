@@ -13,5 +13,6 @@ def check_audit_services():
                     else:
                         return "Fail"
     except Exception as e:
+        return f"Error: {e}"
 
 print(check_audit_services())
