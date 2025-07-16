@@ -1,15 +1,18 @@
 import subprocess
 import re
 
-def check_crypto_policies():
+def check_auto_login_with_gui():
     try:
-        result = subprocess.run("update-crypto-policies --show", shell=True, capture_output=True, text=True)
-        output = result.stdout.lower().strip()
-        if output == "future":
-            return ("Pass", "Crypro policies are set to use only secure algorithms")
-        else:
-            return ("Fail", f"Crypto policies allow unsecure algorithms {output}")
+        with open("/etc/gdm/custom.conf", "r") as auto:
+            for line in auto:
+                line = line.strip().lower()
+                if line.startswith("automaticloginenable"):
+                    if "#" in line or ";" in line:
+                        continue
+                    value = line.split("=", 1)[1].strip()
+                    return "Pass" if value == "false" else "fail"
+        return "Fail"
     except Exception as e:
         return f"Error: {e}"
 
-print(check_crypto_policies())
+print(check_auto_login_with_gui())
