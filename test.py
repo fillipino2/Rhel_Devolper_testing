@@ -3,17 +3,24 @@ import re
 import os
 import glob
 
-def check_gui():
-
+def check_pki_status():
+    
     try:
-        command = subprocess.run("rpm -qa | grep xorg | grep server",
+
+        command = subprocess.run("grep certificate_verification /etc/sssd/sssd.conf /etc/sssd/conf.d/*.conf | grep -v \"^#\"",
                                  shell=True,
                                  capture_output=True,
-                                 text=True)
+                                 text=True,)
         if command.returncode == 0:
-            return ("Fail", f"Gui has been installed {command.stdout} ")
+            output = command.stdout.strip()
+            if "=" in output:
+                key, val = [x.strip() for x in output.split("=", 1)]
+                if key == "certificate_verification" and val == "ocsp_dgst=sha1":
+                    return ("Pass", f"Im not sure what to write: {output}")
+                else:
+                    return ("Fail", f"Im not sure what to write: {output}")
         else:
-            return ("Pass", f"No GUI has been installed {command.stdout}")
+            return "Fail"
     except Exception as e:
         return f"Error: {e}"
-print(check_gui())
+print(check_pki_status())
