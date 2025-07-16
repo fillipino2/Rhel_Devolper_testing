@@ -1,6 +1,5 @@
 #main python script
 import csv
-import checklist1
 import inspect
 import test
 
