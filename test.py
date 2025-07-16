@@ -7,9 +7,9 @@ def check_shosts_file():
         command = subprocess.run("find / -name '*.shosts' 2>/dev/null", shell=True, capture_output=True, text=True)
         output = command.stdout.strip()
         if output:
-            return "Fail"
+            return ("Fail", f"shosts files were found: {command.stdout}")
         else:
-            return "Pass"
+            return ("Pass", "No .shosts file was found")
     except Exception as e:
         return f"Error: {e}"
 
