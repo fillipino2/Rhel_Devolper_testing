@@ -4,15 +4,32 @@ import os
 
 def check_ctl_alt_del():
     try:
-        command = subprocess.run("sudo systemctl status ctrl-alt-del.target", shell=True, capture_output=True, text=True)
-        result = command.stdout.strip().lower()
-        for line in result.splitlines():
+        command = subprocess.run(
+            "systemctl status ctrl-alt-del.target",
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+        output = command.stdout.strip().lower()
+
+        loaded_line = ""
+        active_line = ""
+
+        for line in output.splitlines():
             if line.startswith("loaded:"):
-                key_value = [s.strip() for s in line.split(":",1)]
-                if len(key_value) == 2 and "masked" in key_value[1].lower():
-                    return "Pass"
-        return ("Fail", f"Reason for failure: {key_value}")
+                loaded_line = line.strip()
+            elif line.startswith("active:"):
+                active_line = line.strip()
+
+        if "masked" in loaded_line:
+            return ("Pass", "ctrl-alt-del.target is masked as required")
+        else:
+            return (
+                "Fail",
+                f"ctrl-alt-del.target is not masked — status is: {loaded_line}; {active_line}"
+            )
+
     except Exception as e:
-        return f"Error: {e}"
+        return ("Error", str(e))
 
 print(check_ctl_alt_del())
