@@ -13,7 +13,7 @@ def check_ctl_alt_del():
         output = command.stdout.strip().lower()
 
         for line in output.splitlines():
-            if line.startswith("loaded:"):
+            if line.lstrip().startswith("loaded:"):
                 if "masked" in line:
                     return ("Pass", "ctrl-alt-del.target is masked as required")
                 else:
