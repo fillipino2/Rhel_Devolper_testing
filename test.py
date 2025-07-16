@@ -2,15 +2,17 @@ import subprocess
 import re
 import os
 
-def check_telnet_server_package():
+def check_audit_services():
     try:
-        command = subprocess.run("yum list installed telnet-server",shell=True,capture_output=True,text=True)
-        
-        if command.returncode != 0:
-            return ("Pass", "No telnet-server package is installed")
-        else:
-            return ("Fail", "telnet-server package is installed and must be removed")
+        command = subprocess.run("systemctl status auditd.service", shell=True, capture_output=True, text=True)
+        output = command.stdout.strip()
+        for line in output.splitlines():
+            if line.startswith("Active:"):
+                    if "active (running)" in line.lower():
+                        return "Pass"
+                    else:
+                        return "Fail"
     except Exception as e:
-        return f"Error {e}"
+        return f"Error: {e}"
 
-print(check_telnet_server_package())
+print(check_audit_services())
