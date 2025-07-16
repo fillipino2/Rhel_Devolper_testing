@@ -12,4 +12,4 @@ def check_ftp_package():
     except Exception as e:
         return f"Error: {e}"
 
-print(check_shosts_file())
+print(check_ftp_package())
