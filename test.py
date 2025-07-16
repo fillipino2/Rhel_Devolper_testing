@@ -11,19 +11,21 @@ def check_077():
         failures = []
 
         for line in command.stdout.strip().splitlines():
-            # grep with -H gives output like: /etc/bashrc:umask 022
+            # Expected format: /path/file: line content
             parts = line.split(":", 1)
             if len(parts) != 2:
                 continue
             filename, content = parts
-            stripped = content.strip()
+            filename = filename.strip()
+            content = content.strip()
 
-            if stripped.startswith("#"):
-                failures.append(f"{filename.strip()}: umask commented out")
-            elif "077" in stripped:
-                continue  # Secure
-            elif "umask" in stripped:
-                failures.append(f"{filename.strip()}: {stripped}")
+            # Check for full-line comments
+            if re.match(r'^\s*#', content):
+                failures.append(f"{filename}: umask commented out")
+            elif "077" in content:
+                continue  # secure
+            elif "umask" in content:
+                failures.append(f"{filename}: {content}")
 
         if failures:
             return ("Fail", "; ".join(failures))
