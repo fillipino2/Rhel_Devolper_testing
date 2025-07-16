@@ -1,6 +1,7 @@
 import subprocess
 import re
 import os
+import glob
 
 def check_icmp_redirect():
     try:
