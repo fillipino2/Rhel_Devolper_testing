@@ -2,14 +2,13 @@ import subprocess
 import re
 import os
 
-def check_shosts_file():
+def check_ftp_package():
     try:
-        command = subprocess.run("find / -name '*.shosts' 2>/dev/null", shell=True, capture_output=True, text=True)
-        output = command.stdout.strip()
-        if output:
-            return ("Fail", f"shosts files were found: {command.stdout}")
+        command = subprocess.run("sudo yum list installed | grep ftpd", shell=True, capture_output=True, text=True)
+        if command.returncode == 0:
+            return ("Fail", f"ftpd package was found: {command.stdout}")
         else:
-            return ("Pass", "No .shosts file was found")
+            return ("Pass", "No ftpd package was found was found")
     except Exception as e:
         return f"Error: {e}"
 
