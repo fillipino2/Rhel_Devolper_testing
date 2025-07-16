@@ -11,7 +11,7 @@ def check_ctl_alt_del():
                 key_value = [s.strip() for s in line.split(":",1)]
                 if len(key_value) == 2 and "masked" in key_value[1].lower():
                     return "Pass"
-        return "Fail"
+        return ("Fail", f"Reason for failure: {key_value}")
     except Exception as e:
         return f"Error: {e}"
 
