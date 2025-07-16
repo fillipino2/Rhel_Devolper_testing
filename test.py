@@ -11,6 +11,6 @@ def check_blank_password():
     if empty_user:
         return ",".join(empty_user)
     else:
-        return ("No empty passwords for users")
+        return ("Pass", "No empty passwords for users")
 
 print(check_blank_password())
