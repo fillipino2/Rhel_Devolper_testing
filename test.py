@@ -12,22 +12,14 @@ def check_ctl_alt_del():
         )
         output = command.stdout.strip().lower()
 
-        loaded_line = ""
-        active_line = ""
-
         for line in output.splitlines():
             if line.startswith("loaded:"):
-                loaded_line = line.strip()
-            elif line.startswith("active:"):
-                active_line = line.strip()
+                if "masked" in line:
+                    return ("Pass", "ctrl-alt-del.target is masked as required")
+                else:
+                    return ("Fail", f"ctrl-alt-del.target is not masked: {line.strip()}")
 
-        if "masked" in loaded_line:
-            return ("Pass", "ctrl-alt-del.target is masked as required")
-        else:
-            return (
-                "Fail",
-                f"ctrl-alt-del.target is not masked — status is: {loaded_line}; {active_line}"
-            )
+        return ("Fail", "Loaded line not found in systemctl output")
 
     except Exception as e:
         return ("Error", str(e))
