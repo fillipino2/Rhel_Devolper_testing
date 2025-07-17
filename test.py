@@ -74,4 +74,5 @@ def check_access_symlinks():
 
     except Exception as e:
         return ("Error", str(e)
+                
 print(check_access_symlinks())
