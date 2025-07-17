@@ -4,11 +4,11 @@ import os
 import glob
 
 
-def check_access_symlinks():
+def check_access_hardlinks():
     try:
         # Step 1: Check runtime sysctl value
         command = subprocess.run(
-            ["sysctl", "fs.protected_symlinks"],
+            ["sysctl", "fs.protected_hardlinks"],
             capture_output=True,
             text=True
         )
@@ -22,7 +22,7 @@ def check_access_symlinks():
 
         key, val = [x.strip() for x in output.split("=", 1)]
         if key != "fs.protected_symlinks" or val != "1":
-            return ("Fail", f"fs.protected_symlinks is not set to '1' at runtime: {output}")
+            return ("Fail", f"fs.protected_hardlinks is not set to '1' at runtime: {output}")
 
         # Step 2: Check all directories for persistent config
         persistent_dirs = {
@@ -45,9 +45,9 @@ def check_access_symlinks():
                             line = line.strip()
                             if not line or line.startswith("#"):
                                 continue
-                            if "fs.protected_symlinks" in line and "=" in line:
+                            if "fs.protected_hardlinks" in line and "=" in line:
                                 k, v = [x.strip() for x in line.split("=", 1)]
-                                if k == "fs.protected_symlinks" and v == "1":
+                                if k == "fs.protected_hardlinks" and v == "1":
                                     if directory == "/etc/sysctl.d":
                                         etc_found = f"{file_path}: {line}"
                                     else:
@@ -57,7 +57,7 @@ def check_access_symlinks():
 
         # Step 3: Determine final result
         if not etc_found:
-            return ("Fail", "Runtime setting is correct, but /etc/sysctl.d/* does not set fs.protected_symlinks = 1")
+            return ("Fail", "Runtime setting is correct, but /etc/sysctl.d/* does not set fs.protected_hardlinks = 1")
 
         if other_found:
             warning = "\n".join(other_found)
@@ -69,7 +69,7 @@ def check_access_symlinks():
         else:
             return (
                 "Pass",
-                f"fs.protected_symlinks is set to '1' at runtime and correctly configured in /etc/sysctl.d:\n{etc_found}"
+                f"fs.protected_hardlinks is set to '1' at runtime and correctly configured in /etc/sysctl.d:\n{etc_found}"
             )
 
     except Exception as e:
