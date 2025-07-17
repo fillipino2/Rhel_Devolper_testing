@@ -3,29 +3,24 @@ import re
 import os
 import glob
 
-def check_pki_status():
+def check_audit_shadow_file():
     try:
-        command = subprocess.run(
-            "grep certificate_verification /etc/sssd/sssd.conf /etc/sssd/conf.d/*.conf | grep -v \"^#\"",
-            shell=True,
-            capture_output=True,
-            text=True,
-        )
 
+        command = subprocess.run("grep /etc/shadow /etc/audit/audit.rules",
+                                 shell=True,
+                                 capture_output=True,
+                                 text=True)
+        
         output = command.stdout.strip()
-
-        if command.returncode == 0:
-            if "=" in output:
-                key, val = [x.strip() for x in output.split("=", 1)]
-                if key == "certificate_verification" and val == "ocsp_dgst=sha1":
-                    return ("Pass", f"certificate_verification is correctly set: {output}")
-                else:
-                    return ("Fail", f"certificate_verification is incorrectly set: {output}")
-            else:
-                return ("Fail", f"No key=value pair found in output: {output}")
-        else:
-            return ("Fail", f"No matching configuration found. Output: {output or command.stderr.strip()}")
+        for line in output.splitlines():
+            if "-w /etc/shadow" in line:
+                match = re.search(r"-p\s*([rwa]+)", line)
+                if match:
+                    perms = match.group(1)
+                    if "w" in perms and "a" in perms:
+                        return "Pass"
+        return "Fail"
 
     except Exception as e:
-        return ("Error", str(e))
-print(check_pki_status())
+        return f"Error: {e}"
+print(check_audit_shadow_file())
