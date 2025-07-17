@@ -6,43 +6,29 @@ import glob
 
 def check_access_symlinks():
     try:
-        # Step 1: Check current runtime value
-        command = subprocess.run(["sysctl", "fs.protected_symlinks"],
-                                 capture_output=True,
-                                 text=True)
+        # Step 1: Check runtime value
+        command = subprocess.run(
+            ["sysctl", "fs.protected_symlinks"],
+            capture_output=True,
+            text=True
+        )
 
         if command.returncode != 0:
-            return ("Fail", "Failed to query sysctl fs.protected_symlinks")
+            return ("Fail", "Failed to read runtime setting from sysctl")
 
         output = command.stdout.strip()
-
         if "=" not in output:
-            return ("Fail", f"Unexpected sysctl output format: {output}")
+            return ("Fail", f"Unexpected sysctl output: {output}")
 
         key, val = [x.strip() for x in output.split("=", 1)]
-
         if key != "fs.protected_symlinks" or val != "1":
-            return ("Fail", f"fs.protected_symlinks is not set to 1 at runtime: {output}")
+            return ("Fail", f"fs.protected_symlinks is not set to '1' at runtime: {output}")
 
-        # Step 2: Check persistent configuration
-        file_list = [
-            "/run/sysctl.d/*.conf",
-            "/usr/local/lib/sysctl.d/*.conf",
-            "/usr/lib/sysctl.d/*.conf",
-            "/lib/sysctl.d/*.conf",
-            "/etc/sysctl.conf",
-            "/etc/sysctl.d/*.conf"
-        ]
-        files_to_check = []
-        for path in file_list:
-            if "*" in path:
-                files_to_check.extend(glob.glob(path))
-            else:
-                files_to_check.append(path)
-
+        # Step 2: Only check /etc/sysctl.d/*.conf for persistent config
         found_config = None
+        config_files = glob.glob("/etc/sysctl.d/*.conf")
 
-        for file_path in files_to_check:
+        for file_path in config_files:
             try:
                 with open(file_path, "r") as fp:
                     for line in fp:
@@ -51,17 +37,16 @@ def check_access_symlinks():
                             continue
                         if "fs.protected_symlinks" in line and "=" in line:
                             k, v = [x.strip() for x in line.split("=", 1)]
-                            if k == "fs.protected_symlinks":
-                                if v == "1":
-                                    found_config = f"{file_path}: {line}"
-                                    break
+                            if k == "fs.protected_symlinks" and v == "1":
+                                found_config = f"{file_path}: {line}"
+                                break
             except Exception:
                 continue  # silently skip unreadable files
 
         if found_config:
-            return ("Pass", f"fs.protected_symlinks is set to '1' at runtime and persistently configured in {found_config}")
+            return ("Pass", f"fs.protected_symlinks is correctly set to '1' at runtime and in: {found_config}")
         else:
-            return ("Fail", "Runtime setting is correct, but no persistent configuration for fs.protected_symlinks = 1 was found")
+            return ("Fail", "fs.protected_symlinks = 1 is not set persistently in /etc/sysctl.d/*.conf")
 
     except Exception as e:
         return ("Error", str(e))
