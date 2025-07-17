@@ -18,8 +18,8 @@ def check_audit_shadow_file():
                 if match:
                     perms = match.group(1)
                     if "w" in perms and "a" in perms:
-                        return "Pass"
-        return "Fail"
+                        return ("Pass", f"Audit file is correct: {output}")
+        return ("Fail", f"What could this be: {output}")
 
     except Exception as e:
         return f"Error: {e}"
