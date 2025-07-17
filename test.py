@@ -152,7 +152,7 @@ def check_blank_password():
                 if len(fields) > 1 and fields[1] == "":
                     empty_user.append(fields[0])
         if empty_user:
-            return ("Fail", f"Users with blank password{",".join(empty_user)}")
+            return ("Fail", f"Users with blank passwords: {', '.join(empty_user)}")
         else:
             return ("Pass", "No empty passwords for users")
     except Exception as e:
