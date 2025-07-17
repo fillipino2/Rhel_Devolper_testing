@@ -57,4 +57,4 @@ def check_access_symlinks():
 
     except Exception as e:
         return f"Error: {e}"
-print(check_audit_shadow_file())
+print(check_access_symlinks())
