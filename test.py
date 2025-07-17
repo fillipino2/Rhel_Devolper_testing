@@ -75,4 +75,4 @@ def check_access_hardlinks():
     except Exception as e:
         return ("Error", str(e))
                 
-print(check_access_symlinks())
+print(check_access_hardlinks())
