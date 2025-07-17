@@ -1,0 +1,30 @@
+Check Name,Result,Details
+check_077,Fail,/etc/bashrc: umask commented out; /etc/bashrc: umask 002; /etc/bashrc: umask 022; /etc/csh.cshrc: umask 002; /etc/csh.cshrc: umask 022; /etc/profile: umask commented out; /etc/profile: umask 002; /etc/profile: umask 022
+check_access_hardlinks,Fail,fs.protected_hardlinks is not set to '1' at runtime: fs.protected_hardlinks = 1
+check_access_symlinks,Fail,"Runtime setting is correct, but /etc/sysctl.d/* does not set fs.protected_symlinks = 1"
+check_audit_services,Pass,Audit service is currently running
+check_audit_shadow_file,Fail,No audit rule found for /etc/shadow
+check_auto_login_with_gui,N/A,"custom.conf is not present; GUI is most likely not in use, Ask stakeholder to configr"
+check_bios_UEFI,N/A,Only Applicable to UEFI systems
+check_blank_password,Pass,No empty passwords for users
+check_crypto_policies,Fail,Crypto policies allow unsecure algorithms: default
+check_ctl_alt_del,Fail,ctrl-alt-del.target is not masked: loaded: loaded (/usr/lib/systemd/system/reboot.target; enabled; vendor preset: enabled)
+check_ctrlaltdelete_burst,Fail,CtrlAltDelBurstAction setting not found in /etc/systemd/system.conf
+check_ftp_package,Pass,No ftpd package was found was found
+check_gpgcheck_enabled,Pass,All gpgcheck settings are enabled
+check_gui,Pass,No GUI has been installed 
+check_gui_ctrlaltdel_86,Not Applicable,System is running in non-GUI (multi-user) mode. Ctrl+Alt+Del GUI logout policy does not apply.
+check_icmp_redirect,Fail,Fail
+check_ipv4_forwarding,Fail,Fail
+check_os_release,Pass,The version is the correct version: 8.1
+check_permitemptypassword_sshd, PermitEmptyPasswords,Pass
+check_pki_status,Fail,Error: local variable 'output' referenced before assignment
+check_postfix,N/A,Since postifix is not installed this is N/A
+check_promisc_mode,Pass,promisc mode is disabled
+check_rsh_server_package,Pass,rsh-server is not installed
+check_selinux_enabled,Pass,SELinux is enabled
+check_selinux_target_policy,Pass,SELinux is enforcing targeted policies
+check_shosts_equiv_file,Pass,No shosts.equiv file was found
+check_shosts_file,Pass,No .shosts file was found
+check_signed_packages_dnf,Fail,'localpkgcheck_gpg=true' is missing from /etc/dnf/dnf.conf
+check_telnet_server_package,Pass,No telnet-server package is installed
