@@ -14,7 +14,7 @@ def check_ocp_or_rhel():
         os.getenv("KUBERNETES_SERVICE_HOST") is not None
     )
 
-os_environment = "ocp_checklist" if check_ocp_or_rhel() else "checklist"
+os_environment = "ocp_checklist" if check_ocp_or_rhel() else "test"
 
 import_checklist = importlib.import_module(os_environment)
 check_functions = [
