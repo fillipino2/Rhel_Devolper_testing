@@ -1,10 +1,24 @@
 #main python script
 import csv
 import inspect
-import test
+import importlib
+import shutil
+import os
 
+
+def check_ocp_or_rhel():
+    return(
+        shutil.which("oc") is not None or
+        shutil.which("kubectl") is not None or
+        os.path.isdir("/run/secrets/kubernetes.io") or
+        os.getenv("KUBERNETES_SERVICE_HOST") is not None
+    )
+
+os_environment = "ocp_checklist" if check_ocp_or_rhel() else "checklist"
+
+import_checklist = importlib.import_module(os_environment)
 check_functions = [
-    (name, obj) for name, obj in inspect.getmembers(test)
+    (name, obj) for name, obj in inspect.getmembers(import_checklist)
     if inspect.isfunction(obj) and name.startswith("check_")
     
 ]
